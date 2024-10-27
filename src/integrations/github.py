@@ -43,9 +43,9 @@ class GitHubRepo:
     def repo(self) -> str:
         return self._repo
 
-    async def fetch_content(self, client: httpx.AsyncClient) -> list[str]:
+    async def fetch_content(self, client: httpx.AsyncClient) -> list[GitHubFile]:
         """Returns all content of repo."""
-        content: list[str] = []
+        content: list[GitHubFile] = []
         response = await self._http_get(client, self._content_url)
         response_deque = deque(response)
         while response_deque:
@@ -54,7 +54,7 @@ class GitHubRepo:
                 file_response = await self._http_get(client, pop['url'])
                 file_response = cast(dict, file_response)
                 file = GitHubFile(path=file_response['path'], content=file_response['content'])
-                content.append(str(file))
+                content.append(file)
             elif pop['type'] == 'dir':
                 dir_response = await self._http_get(client, pop['url'])
                 response_deque.extendleft(dir_response)

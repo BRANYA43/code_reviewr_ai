@@ -59,7 +59,7 @@ class TestGitHubRepo:
         async with httpx.AsyncClient() as client:
             content = await repo.fetch_content(client)
 
-        assert content == ['file1.txt: Hello World', 'file2.txt: Hello Python']
+        assert [str(file) for file in content] == ['file1.txt: Hello World', 'file2.txt: Hello Python']
 
     @pytest.mark.asyncio
     @patch.object(GitHubRepo, '_http_get', new_callable=AsyncMock)
@@ -78,8 +78,7 @@ class TestGitHubRepo:
         repo = GitHubRepo(self.REPO_URL)
         async with httpx.AsyncClient() as client:
             content = await repo.fetch_content(client)
-
-        assert content == ['file1.txt: Hello World']
+        assert [str(file) for file in content] == ['file1.txt: Hello World']
 
     @pytest.mark.skipif(settings.skip_integration_tests, reason='Skipping integration tests.')
     @pytest.mark.asyncio
