@@ -16,6 +16,7 @@ redis = "^5.2.0"
 uvicorn = "^0.32.0"
 openai = "^1.52.2"
 g4f = {extras = ["all"], version = "^0.3.3.2"}
+tenacity = "^9.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
