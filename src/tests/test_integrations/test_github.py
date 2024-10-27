@@ -61,6 +61,26 @@ class TestGitHubRepo:
 
         assert content == ['file1.txt: Hello World', 'file2.txt: Hello Python']
 
+    @pytest.mark.asyncio
+    @patch.object(GitHubRepo, '_http_get', new_callable=AsyncMock)
+    async def test_fetching_content_returns_content_but_exclude_expected_extensions(self, mock_get):
+        settings.exclude_extensions = ('.gitignore',)
+        mock_response_values = {
+            self.CONTENT_REPO_URL: [
+                {'type': 'file', 'path': 'file1.txt', 'url': 'file1_url'},
+                {'type': 'file', 'path': '.gitignore', 'url': 'git_url'},
+            ],
+            'file1_url': {'path': 'file1.txt', 'content': bytes('SGVsbG8gV29ybGQ=', 'utf-8')},
+            'git_url': {'path': '.gitignore', 'content': bytes('SGVsbG8gUHl0aG9u', 'utf-8')},
+        }
+        mock_get.side_effect = lambda client_, key, *args, **kwargs: mock_response_values[key]
+
+        repo = GitHubRepo(self.REPO_URL)
+        async with httpx.AsyncClient() as client:
+            content = await repo.fetch_content(client)
+
+        assert content == ['file1.txt: Hello World']
+
     @pytest.mark.skipif(settings.skip_integration_tests, reason='Skipping integration tests.')
     @pytest.mark.asyncio
     async def test_integration_with_github(self):

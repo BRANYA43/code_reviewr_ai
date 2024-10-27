@@ -50,7 +50,7 @@ class GitHubRepo:
         response_deque = deque(response)
         while response_deque:
             pop = response_deque.popleft()
-            if pop['type'] == 'file':
+            if pop['type'] == 'file' and not pop['path'].endswith(settings.exclude_extensions):
                 file_response = await self._http_get(client, pop['url'])
                 file_response = cast(dict, file_response)
                 file = GitHubFile(path=file_response['path'], content=file_response['content'])
