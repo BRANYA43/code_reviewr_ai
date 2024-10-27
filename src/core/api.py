@@ -15,6 +15,11 @@ chatgpt_client = ChatGPT(settings.openai_model)
 httpx_client = httpx.AsyncClient()
 
 
+@api.get('/api/ping')
+async def ping():
+    return dict(status_code=200, message='pong')
+
+
 @api.post('/api/review')
 async def review(payload: ReviewInputSchema):
     repo_content = await get_repo_content(payload.github_repo_url)
