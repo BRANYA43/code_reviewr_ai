@@ -1,4 +1,4 @@
-import openai
+import tenacity
 from fastapi import FastAPI, HTTPException
 import httpx
 
@@ -37,8 +37,8 @@ async def get_finally_review(file_reviews: list[str]) -> str:
     finally_msg = await chatgpt_client.create_message(role='user', content=f'Report: {file_reviews_}')
     try:
         finally_review = await chatgpt_client.get_response([finally_review_msg, finally_msg], max_token=2000)
-    except openai.OpenAIError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except tenacity.RetryError as e:
+        raise HTTPException(status_code=500, detail=str(e.last_attempt.exception()))
     return finally_review
 
 
@@ -53,8 +53,8 @@ async def get_file_reviews(repo_content: list[str], payload: ReviewInputSchema) 
         )
         try:
             response = await chatgpt_client.get_response([reviewing_file_msg, file_msg], max_token=150)
-        except openai.OpenAIError as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        except tenacity.RetryError as e:
+            raise HTTPException(status_code=500, detail=str(e.last_attempt.exception()))
         reviews.append(response)
     return reviews
 
