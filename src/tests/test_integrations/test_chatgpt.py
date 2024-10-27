@@ -41,8 +41,7 @@ class TestChatGpt:
 
     @pytest.mark.skipif(settings.skip_integration_tests, reason='Skipping integration tests.')
     @pytest.mark.asyncio
-    async def test_integration_getting_response(self, mock_create, chatgpt):
-        mock_create.return_value = 'Hello!'
+    async def test_integration_getting_response(self, chatgpt):
         msg = await chatgpt.create_message('user', 'hi')
         response = await chatgpt.get_response([msg])
         assert bool(response)
