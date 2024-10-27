@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).parent.parent
 
 class Settings(BaseSettings):
     openai_api_token: str
-    openai_model: str = 'gpt-4'
+    openai_model: str = 'gpt-4-turbo'
     github_api_token: str
     exclude_extensions: str | tuple[str, ...] = ('.gitignore',)
     skip_integration_tests: bool = False
