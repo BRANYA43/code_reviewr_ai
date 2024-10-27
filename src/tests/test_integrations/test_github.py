@@ -4,6 +4,7 @@ import httpx
 import pytest
 from httpx import Request
 
+from core.settings import settings
 from integrations.github import GitHubRepo
 
 
@@ -59,3 +60,14 @@ class TestGitHubRepo:
             content = await repo.fetch_content(client)
 
         assert content == ['file1.txt: Hello World', 'file2.txt: Hello Python']
+
+    @pytest.mark.skipif(settings.skip_integration_tests, reason='Skipping integration tests.')
+    @pytest.mark.asyncio
+    async def test_integration_with_github(self):
+        repo = GitHubRepo('https://github.com/BRANYA43/console_weather')
+        async with httpx.AsyncClient() as client:
+            content = await repo.fetch_content(client)
+
+        assert bool(content)
+
+        print(content[:20], '...]')  # noqa [T201]
